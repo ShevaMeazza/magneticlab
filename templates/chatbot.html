@@ -1,0 +1,62 @@
+{% include 'layout.html' %}
+{%block content%}
+<div class="min-h-screen flex items-center justify-center">
+    <div class="bg-gray-800 rounded-xl shadow-lg w-full max-w-2xl p-8">
+        <div class="text-center text-white mb-6">
+            <h1 class="text-xl font-semibold">👋 Halo, aku Aslab web ini</h1>
+            <p class="text-gray-500 text-lg">Kamu mau nanya apa?</p>
+        </div>
+
+        <div class="flex items-center border border-gray-300 rounded-full px-4 py-2 bg-white shadow">
+            <input id="user-input" type="text" placeholder="Tanya aku apapun..."
+                class="flex-1 outline-none bg-transparent text-sm" />
+            <button onclick="sendMessage()"
+                class="bg-blue-500 hover:bg-blue-600 text-white rounded-full px-5 py-1.5 ml-2 text-sm">Kirim</button>
+        </div>
+
+        <div id="chat-output" class="mt-6 text-white text-sm whitespace-pre-line"></div>
+    </div>
+</div>
+
+<script>
+    async function sendMessage() {
+        const inputEl = document.getElementById("user-input");
+        const chatArea = document.getElementById("chat-output");
+        const userMessage = inputEl.value.trim();
+
+        if (!userMessage) return;
+
+        const userBubble = document.createElement("div");
+        userBubble.className = "text-right";
+        userBubble.innerHTML = `<span class=" px-4 py-2 inline-block rounded-xl max-w-xs break-words">${userMessage}</span>`;
+        chatArea.appendChild(userBubble);
+
+        inputEl.value = "";
+        inputEl.disabled = true;
+
+        const botBubble = document.createElement("div");
+        botBubble.className = "text-left text-white italic";
+        botBubble.innerText = "Tunggu ya...";
+        chatArea.appendChild(botBubble);
+        chatArea.scrollTop = chatArea.scrollHeight;
+
+        try {
+            const res = await fetch("/ask", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ message: userMessage })
+            });
+
+            const data = await res.json();
+            botBubble.className = "text-left";
+            botBubble.innerHTML = `<span class=" px-4 py-2 inline-block rounded-xl max-w-xs break-words">${data.reply}</span>`;
+        } catch (err) {
+            botBubble.innerText = "Gagal menjawab.";
+        }
+
+        inputEl.disabled = false;
+        inputEl.focus();
+        chatArea.scrollTop = chatArea.scrollHeight;
+    }
+</script>
+{%endblock%}

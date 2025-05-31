@@ -1,0 +1,90 @@
+{% include 'layout.html' %}
+
+{% block content %}
+<div class="ml-5 rounded-xl bg-white shadow p-5">
+    <p class="text-blue-500 font-semibold">x1 dan y1 = titik awal kawat</p> <br>
+    <p class="text-blue-500 font-semibold">x2 dan y2 = titik akhir kawat</p> <br>
+    <p class="text-blue-500 font-semibold">Arus (I) = besar arus listrik</p> <br>
+    <p class="text-blue-500 font-semibold">segmen = jumlah segmen pembagi kawat</p> <br>
+    <form id="inputForm" method="POST">
+        <label>x1: <input class="bg-gray-300 rounded-md" type="number" step="any" name="x1" value=""></label>
+        <label>x2: <input class="bg-gray-300 rounded-md" type="number" step="any" name="x2" value=""></label>
+        <label>y1: <input class="bg-gray-300 rounded-md" type="number" step="any" name="y1" value=""></label>
+        <label>y2: <input class="bg-gray-300 rounded-md" type="number" step="any" name="y2" value=""></label>
+        <label>Arus (I): <input class="bg-gray-300 rounded-md" type="number" step="any" name="I" value=""></label>
+        <label>Segmen: <input class="bg-gray-300 rounded-md" type="number" name="n_segments" value=""></label>
+        <button class="bg-blue-500 text-white rounded p-2" type="submit">Simulasikan</button>
+    </form>
+</div>
+
+
+<div id="plot" style="width:100%;height:80vh;"></div>
+<div id="error-message" class="bg-red-500"></div>
+
+<script>
+    document.getElementById("inputForm").addEventListener("submit", async function (e) {
+        e.preventDefault();
+
+        const formData = new FormData(this);
+        const input = {};
+        formData.forEach((value, key) => input[key] = value);
+
+        try {
+            const response = await fetch("/calculate", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(input)
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                alert("Error: " + (data.error || "Terjadi kesalahan."));
+                return;
+            }
+
+            // Siapkan data vektor untuk Plotly
+            const vectors = {
+                type: 'scatter',
+                mode: 'lines+markers',
+                x: [],
+                y: [],
+                line: { color: 'blue' },
+                marker: { size: 2 }
+            };
+
+            for (let i = 0; i < data.X.length; i++) {
+                for (let j = 0; j < data.X[i].length; j++) {
+                    let x0 = data.X[i][j];
+                    let y0 = data.Y[i][j];
+                    let dx = data.Bx[i][j] * 0.2;
+                    let dy = data.By[i][j] * 0.2;
+
+                    vectors.x.push(x0, x0 + dx, null);
+                    vectors.y.push(y0, y0 + dy, null);
+                }
+            }
+
+            const wire = {
+                type: 'scatter',
+                mode: 'lines',
+                x: data.wire_x,
+                y: data.wire_y,
+                line: { color: 'red', width: 3 },
+                name: 'Kawat'
+            };
+
+            Plotly.newPlot('plot', [vectors, wire], {
+                title: 'Medan Magnet 2D - Hukum Biot-Savart',
+                xaxis: { scaleanchor: 'y' },
+                yaxis: { scaleanchor: 'x' }
+            });
+
+        } catch (err) {
+            document.getElementById('error-message').innerText = data.error || "Terjadi kesalahan";
+            console.error(err);
+        }
+    });
+</script>
+
+{%endblock%}

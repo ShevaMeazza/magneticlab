@@ -1,0 +1,29 @@
+{% extends 'layout.html' %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<div class="flex flex-col lg:flex-row justify-between items-start p-6 lg:p-16 gap-10">
+
+  <!-- Left Section -->
+  <div class="lg:w-1/2 space-y-6 fade-in-up">
+    <h1 class="text-4xl md:text-5xl font-semibold leading-tight">
+      Selamat datang<br>di dunia<span class="inline-block">🧲</span><br>medan magnet
+    </h1>
+    <p class="text-lg text-gray-600">
+      Medan magnet adalah wilayah di sekitar magnet atau arus listrik yang menghasilkan gaya magnetik. Disini kita akan belajar mengenai medan magnet mulai dari materinya hingga simulasi praktiknya. selamat datang di MagneticLab kelompok 6
+    </p>
+    <button class="bg-black text-white px-5 py-2 rounded-full hover:bg-gray-800 transition">
+      "Unlocking Nature's Invisible Power with Magnetic Field"
+    </button>
+    <p class="text-xs text-gray-500 pt-4">
+     <a href="/materi" style="text-decoration: none;" class="text-lg bg-blue-600 text-white px-5 py-2 rounded-full hover:bg-blue-800 transition">Mulai Petualangan</a>
+    </p>
+  </div>
+  <div class="relative lg:w-1/2 fade-in-up">
+    <div class="rounded-3xl bg-white shadow p-4 mt-10">
+      <img src="/static/magnet.png" alt="DNA plant" class="rounded-xl w-full object-cover" />
+    </div>
+  </div>
+</div>
+{% endblock %}

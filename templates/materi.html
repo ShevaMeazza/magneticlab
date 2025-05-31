@@ -1,0 +1,38 @@
+{% include 'layout.html' %}
+{% block content %}
+<div class="flex flex-col lg:flex-row justify-between items-start p-6 lg:p-16 gap-10">
+
+  <!-- Left Section -->
+  <div class="lg:w-1/2 space-y-6 fade-in-up">
+    <h1 class="text-4xl md:text-5xl font-semibold leading-tight">
+      Apa itu <br> Medan Magnet?
+    </h1>
+    <p class="text-lg text-gray-600">
+      Medan magnet adalah ruang atau wilayah di sekitar magnet, arus listrik, atau partikel bermuatan yang bergerak, di
+      mana gaya magnetik dapat dirasakan oleh benda magnetik atau partikel bermuatan lainnya. Medan ini memiliki arah
+      dan kekuatan, biasanya digambarkan dengan garis-garis gaya yang keluar dari kutub utara magnet dan masuk ke kutub
+      selatan. Arah medan magnet di sekitar arus listrik dapat ditentukan dengan aturan tangan kanan. Medan magnet tidak
+      hanya dihasilkan oleh magnet permanen, tetapi juga oleh arus listrik, seperti pada kawat berarus, solenoida, dan
+      peralatan elektromagnetik lainnya.
+    </p>
+
+  </div>
+  <div class="relative lg:w-1/2 fade-in-up ml-10">
+    <img src="/static/gam-mag.gif" alt="ilustrasi magnet" width="500px" class="rounded-lg object-cover" />
+  </div>
+
+</div>
+<div class="flex flex-col lg:flex-row justify-between items-start p-6 lg:p-16 gap-10">
+  <div class="lg:w-1/2 space-y-6 fade-in-up">
+    <img src="/static/biot.png" alt="Rumus biot savart" width="500px" class="rounded-lg object-cover" />
+  </div>
+  <div class="relative lg:w-1/2 fade-in-up ml-10">
+    <h1 class="text-4xl md:text-5xl font-semibold leading-tight">
+      Mengenal Hukum <br> Biot Savart
+    </h1>
+    <p class="text-lg text-gray-600 mt-5">
+      Secara sederhana, hukum ini menyakatakan hubungan antara arus listrik yang mengalir pada suatu lintasan dengan medan magnet yang muncul disekitar lintasan tersebut. Biot-Savart dalam eksperimennya, menyatakan bahwa besarnya kuat medan magnet di suatu titik yang dipengaruhi oleh kawat penghantar dan dialiri arus listrik adalah: berbanding lurus dengan kuat arus listrik, berbanding lurus dengan panjang kawat, berbanding lurus dengan kuadrat jarak antara titik ke kawat penghantar, berbanding lurus dengan sinus sudut apit antara arah arus dan garis hubung antara titik ke kawat penghantar.      
+    </p>
+  </div>
+</div>
+{%endblock%}
