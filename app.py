@@ -1,6 +1,5 @@
 from flask import Flask, render_template, jsonify, request
 import requests
-import math
 import numpy as np
 
 app = Flask(__name__)
