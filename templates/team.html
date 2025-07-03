@@ -1,10 +1,35 @@
-{% include 'layout.html' %}
+{% extends 'layout.html' %}
 {% block content %}
-<p class="text-2xl text-center font-semibold text-blue-500">Sixlicious Member</p>
-<div class="mt-5 flex items-center justify-center">
-        <img src="/static/asep.jpg" width="300px" alt="sheva">
-        <img src="/static/galih.jpg" width="300px" alt="galih">
-        <img src="/static/gilbayy.jpg" width="300px" alt="gilbay">
-        <img src="/static/paceri.jpg" width="300px" alt="fahri">
+
+<div class="max-w-6xl mx-auto p-6">
+  <h1 class="text-3xl font-bold text-center text-blue-600 mb-8">Our Team - Sixlicious</h1>
+  
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+    <div class="bg-white rounded shadow p-4 text-center">
+      <img src="/static/asep.jpg" alt="Asep" class="w-48 h-48 object-cover mx-auto rounded-full mb-4">
+      <h2 class="text-xl font-semibold text-gray-700">Sheva</h2>
+      <p class="text-gray-500">Spesialis Bubur diaduk</p>
+    </div>
+
+    <div class="bg-white rounded shadow p-4 text-center">
+      <img src="/static/galih.jpg" alt="Galih" class="w-48 h-48 object-cover mx-auto rounded-full mb-4">
+      <h2 class="text-xl font-semibold text-gray-700">Galih</h2>
+      <p class="text-gray-500">Pelari 10km pace 4</p>
+    </div>
+
+    <div class="bg-white rounded shadow p-4 text-center">
+      <img src="/static/gilbayy.jpg" alt="Gilbay" class="w-48 h-48 object-cover mx-auto rounded-full mb-4">
+      <h2 class="text-xl font-semibold text-gray-700">Gilbay</h2>
+      <p class="text-gray-500">Ketua kelas atmin whatsapp</p>
+    </div>
+
+    <div class="bg-white rounded shadow p-4 text-center">
+      <img src="/static/paceri.jpg" alt="Fahri" class="w-48 h-48 object-cover mx-auto rounded-full mb-4">
+      <h2 class="text-xl font-semibold text-gray-700">Fahri</h2>
+      <p class="text-gray-500">Keturunan Arap (Reja Arap)</p>
+    </div>
+    
+  </div>
 </div>
-{%endblock%}
+
+{% endblock %}

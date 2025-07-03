@@ -108,7 +108,42 @@ def calculate():
         return jsonify({'error': str(e)}), 500
 
 # fungsi untuk perhitungan
-
+@app.route('/compute_point_2d', methods=['POST'])
+def compute_point_2d():
+    try:
+        data = request.json
+        I = float(data['I'])
+        dlx = float(data['dlx'])
+        dly = float(data['dly'])
+        x_kawat = float(data['x_kawat'])
+        y_kawat = float(data['y_kawat'])
+        x_obs = float(data['x_obs'])
+        y_obs = float(data['y_obs'])
+        
+        # Konstanta mu0
+        mu0 = 4 * np.pi * 1e-7
+        
+        # Vektor r dari kawat ke titik observasi
+        rx = x_obs - x_kawat
+        ry = y_obs - y_kawat
+        r_squared = rx**2 + ry**2
+        
+        if r_squared < 1e-12:
+            return jsonify({'error': 'Jarak ke titik observasi terlalu dekat ke kawat'}), 400
+        
+        r_cubed = r_squared * np.sqrt(r_squared)
+        
+        # Hasil vektor medan magnet 2D (karena dlz=0, maka medan hanya keluar di sumbu z)
+        # Bz keluar dari bidang x-y
+        dBz = mu0 * I * (dlx * ry - dly * rx) / (4 * np.pi * r_cubed)
+        
+        return jsonify({
+            'Bx': 0.0,
+            'By': 0.0,
+            'Bz': dBz
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
     
 if __name__ == '__main__':
     app.run(debug=True)

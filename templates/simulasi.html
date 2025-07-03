@@ -1,90 +1,130 @@
-{% include 'layout.html' %}
-
+{% extends 'layout.html' %}
 {% block content %}
-<div class="ml-5 rounded-xl bg-white shadow p-5">
-    <p class="text-blue-500 font-semibold">x1 dan y1 = titik awal kawat</p> <br>
-    <p class="text-blue-500 font-semibold">x2 dan y2 = titik akhir kawat</p> <br>
-    <p class="text-blue-500 font-semibold">Arus (I) = besar arus listrik</p> <br>
-    <p class="text-blue-500 font-semibold">segmen = jumlah segmen pembagi kawat</p> <br>
-    <form id="inputForm" method="POST">
-        <label>x1: <input class="bg-gray-300 rounded-md" type="number" step="any" name="x1" value=""></label>
-        <label>x2: <input class="bg-gray-300 rounded-md" type="number" step="any" name="x2" value=""></label>
-        <label>y1: <input class="bg-gray-300 rounded-md" type="number" step="any" name="y1" value=""></label>
-        <label>y2: <input class="bg-gray-300 rounded-md" type="number" step="any" name="y2" value=""></label>
-        <label>Arus (I): <input class="bg-gray-300 rounded-md" type="number" step="any" name="I" value=""></label>
-        <label>Segmen: <input class="bg-gray-300 rounded-md" type="number" name="n_segments" value=""></label>
-        <button class="bg-blue-500 text-white rounded p-2" type="submit">Simulasikan</button>
-    </form>
+
+<div class="max-w-3xl mx-auto p-6 bg-white rounded shadow">
+  <h1 class="text-2xl font-bold text-blue-700 mb-4">Simulasi Medan Magnet 2D (Biot-Savart)</h1>
+
+  <div class="text-gray-600 mb-6 space-y-1">
+    <p><span class="font-semibold text-blue-600">x1 & y1:</span> Titik awal kawat</p>
+    <p><span class="font-semibold text-blue-600">x2 & y2:</span> Titik akhir kawat</p>
+    <p><span class="font-semibold text-blue-600">Arus (I):</span> Besar arus listrik (Ampere)</p>
+    <p><span class="font-semibold text-blue-600">Segmen:</span> Jumlah segmen pembagi kawat</p>
+  </div>
+
+  <form id="inputForm" method="POST" class="grid grid-cols-2 md:grid-cols-3 gap-4">
+    <div>
+      <label class="block text-gray-700">x1</label>
+      <input class="w-full bg-gray-100 rounded p-2 focus:outline-none focus:ring focus:border-blue-300" type="number" step="any" name="x1" required>
+    </div>
+    <div>
+      <label class="block text-gray-700">x2</label>
+      <input class="w-full bg-gray-100 rounded p-2 focus:outline-none focus:ring focus:border-blue-300" type="number" step="any" name="x2" required>
+    </div>
+    <div>
+      <label class="block text-gray-700">y1</label>
+      <input class="w-full bg-gray-100 rounded p-2 focus:outline-none focus:ring focus:border-blue-300" type="number" step="any" name="y1" required>
+    </div>
+    <div>
+      <label class="block text-gray-700">y2</label>
+      <input class="w-full bg-gray-100 rounded p-2 focus:outline-none focus:ring focus:border-blue-300" type="number" step="any" name="y2" required>
+    </div>
+    <div>
+      <label class="block text-gray-700">Arus (I)</label>
+      <input class="w-full bg-gray-100 rounded p-2 focus:outline-none focus:ring focus:border-blue-300" type="number" step="any" name="I" required>
+    </div>
+    <div>
+      <label class="block text-gray-700">Segmen</label>
+      <input class="w-full bg-gray-100 rounded p-2 focus:outline-none focus:ring focus:border-blue-300" type="number" name="n_segments" required>
+    </div>
+
+    <div class="col-span-2 md:col-span-3 text-right">
+      <button class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded transition" type="submit">Simulasikan</button>
+    </div>
+  </form>
 </div>
 
-
-<div id="plot" style="width:100%;height:80vh;"></div>
-<div id="error-message" class="bg-red-500"></div>
+<div class="max-w-5xl mx-auto mt-8">
+  <div id="plot" class="w-full h-[80vh] border rounded shadow"></div>
+  <div id="error-message" class="mt-4 text-red-600 font-semibold"></div>
+</div>
 
 <script>
-    document.getElementById("inputForm").addEventListener("submit", async function (e) {
-        e.preventDefault();
-
-        const formData = new FormData(this);
-        const input = {};
-        formData.forEach((value, key) => input[key] = value);
-
-        try {
-            const response = await fetch("/calculate", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(input)
-            });
-
-            const data = await response.json();
-
-            if (!response.ok) {
-                alert("Error: " + (data.error || "Terjadi kesalahan."));
-                return;
-            }
-
-            // Siapkan data vektor untuk Plotly
-            const vectors = {
-                type: 'scatter',
-                mode: 'lines+markers',
-                x: [],
-                y: [],
-                line: { color: 'blue' },
-                marker: { size: 2 }
-            };
-
-            for (let i = 0; i < data.X.length; i++) {
-                for (let j = 0; j < data.X[i].length; j++) {
-                    let x0 = data.X[i][j];
-                    let y0 = data.Y[i][j];
-                    let dx = data.Bx[i][j] * 0.2;
-                    let dy = data.By[i][j] * 0.2;
-
-                    vectors.x.push(x0, x0 + dx, null);
-                    vectors.y.push(y0, y0 + dy, null);
-                }
-            }
-
-            const wire = {
-                type: 'scatter',
-                mode: 'lines',
-                x: data.wire_x,
-                y: data.wire_y,
-                line: { color: 'red', width: 3 },
-                name: 'Kawat'
-            };
-
-            Plotly.newPlot('plot', [vectors, wire], {
-                title: 'Medan Magnet 2D - Hukum Biot-Savart',
-                xaxis: { scaleanchor: 'y' },
-                yaxis: { scaleanchor: 'x' }
-            });
-
-        } catch (err) {
-            document.getElementById('error-message').innerText = data.error || "Terjadi kesalahan";
-            console.error(err);
-        }
+  // Inisialisasi plot kosong saat halaman dibuka
+  document.addEventListener('DOMContentLoaded', function() {
+    Plotly.newPlot('plot', [], {
+      title: 'Medan Magnet 2D - Hukum Biot-Savart',
+      xaxis: { scaleanchor: 'y', range: [-2, 2], title: 'X' },
+      yaxis: { scaleanchor: 'x', range: [-2, 2], title: 'Y' }
     });
+  });
+
+  document.getElementById("inputForm").addEventListener("submit", async function (e) {
+    e.preventDefault();
+
+    const formData = new FormData(this);
+    const input = {};
+    formData.forEach((value, key) => input[key] = value);
+
+    try {
+      const response = await fetch("/calculate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(input)
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        document.getElementById('error-message').innerText = "Error: " + (data.error || "Terjadi kesalahan.");
+        return;
+      }
+
+      document.getElementById('error-message').innerText = '';
+
+      // Siapkan data vektor medan
+      const vectors = {
+        type: 'scatter',
+        mode: 'lines',
+        x: [],
+        y: [],
+        line: { color: 'blue', width: 1 },
+        name: 'Medan Magnet'
+      };
+
+      for (let i = 0; i < data.X.length; i++) {
+        for (let j = 0; j < data.X[i].length; j++) {
+          let x0 = data.X[i][j];
+          let y0 = data.Y[i][j];
+          let dx = data.Bx[i][j] * 0.2;
+          let dy = data.By[i][j] * 0.2;
+
+          vectors.x.push(x0, x0 + dx, null);
+          vectors.y.push(y0, y0 + dy, null);
+        }
+      }
+
+      // Data kawat
+      const wire = {
+        type: 'scatter',
+        mode: 'lines+markers',
+        x: data.wire_x,
+        y: data.wire_y,
+        line: { color: 'red', width: 3 },
+        marker: { color: 'red', size: 5 },
+        name: 'Kawat'
+      };
+
+      Plotly.newPlot('plot', [vectors, wire], {
+        title: 'Simulasi Medan Magnet 2D - Hukum Biot-Savart',
+        xaxis: { scaleanchor: 'y', title: 'X' },
+        yaxis: { scaleanchor: 'x', title: 'Y' }
+      });
+
+    } catch (err) {
+      console.error(err);
+      document.getElementById('error-message').innerText = "Terjadi kesalahan saat memproses data.";
+    }
+  });
 </script>
 
-{%endblock%}
+{% endblock %}
